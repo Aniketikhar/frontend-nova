@@ -1,0 +1,25 @@
+
+
+.search input:focus{
+    outline: 0;
+}
+.search-input {
+    padding: 5px;
+    padding-left: 20px;
+    border: none;
+    border-radius: 20px 0px 0px 20px;
+    outline-offset: 0;
+}
+
+.search-btn{
+    border: none;
+    background-color: white;
+    padding-right: 20px;
+    border-radius: 0px 20px 20px 0px;
+}
+
+@media screen and (max-width: 325px) {
+    .search-input{
+        width: 25px;
+    }
+}

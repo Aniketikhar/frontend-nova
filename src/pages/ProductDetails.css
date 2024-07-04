@@ -1,0 +1,28 @@
+
+
+/* style={{maxHeight: "600px" , overflowY: "scroll"}} */
+
+.product-detail{
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+.product-detail::-webkit-scrollbar{
+    display: none;
+}
+
+.addtocart{
+    transition: 0.4s;
+}
+
+.addtocart:hover{
+    transform: scale(1.10);
+    transition: 0.4s;
+}
+
+@media (max-width: 768px) {
+    .product-detail{
+        height: auto;
+        overflow : none;
+    }
+}

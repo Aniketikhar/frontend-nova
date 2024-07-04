@@ -1,0 +1,41 @@
+
+
+.navbar{
+    box-shadow: none;
+    border-bottom: none
+}
+
+
+.flex-item-1 h2 , .flex-item-2 , .flex-item-3{
+    margin: 12px 0px;
+}
+
+
+
+
+.nav-item{
+    margin: 5px 10px;
+}
+
+
+.navbar-toggler-icon {
+    position: absolute;
+    right: 25px; /* Adjust this value as per your requirement */
+    top: 15px; /* Adjust this value as per your requirement */
+  }
+
+
+  
+  @media screen and (max-width: 450px) {
+    .navbar-toggler-icon {
+      right: 8px; 
+      top: 15px; 
+    }
+    .navbar-nav{
+        position: relative;
+        right: 100px;
+        top: 10px;
+    }
+  }
+
+  

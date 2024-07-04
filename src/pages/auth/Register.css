@@ -1,0 +1,9 @@
+.register{
+   
+   background-color: rgb(248,192,33);
+   background: url("../../../public/images/register-img.jpg");
+   background-position: center center;
+   background-size: cover;  
+   background-repeat: no-repeat;
+   color: white;
+}
