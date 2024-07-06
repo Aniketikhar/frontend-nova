@@ -1,4 +1,4 @@
-
+/* 
 
 .navbar{
     box-shadow: none;
@@ -20,8 +20,8 @@
 
 .navbar-toggler-icon {
     position: absolute;
-    right: 25px; /* Adjust this value as per your requirement */
-    top: 15px; /* Adjust this value as per your requirement */
+    right: 25px; 
+    top: 15px; 
   }
 
 
@@ -38,4 +38,4 @@
     }
   }
 
-  
+   */

@@ -2,6 +2,7 @@
 
 .category-container{
     box-sizing: border-box;
+    display: block;
     
 }
 
@@ -17,4 +18,21 @@
 .category-show li{
     display: inline-block;
     padding: 5px 15px;
+}
+
+.product{
+    width: 12rem;
+}
+
+@media screen and (max-width: 767px) {
+    .category-container{
+        display: none !important;
+    }
+    .slide-img{
+        min-height: 50vh !important;
+        width: auto;
+    
+    }
+    
+
 }

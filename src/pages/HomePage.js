@@ -236,28 +236,30 @@ const HomePage = () => {
   return (
     <Layout title={"All Products - Best offers "}>
       {/* this show all categories */}
-      <div className="container-fluid category-container px-5 py-2 bg-dark text-light">
-        <div className="d-inline-block">
-          All Categories
-          {/* <Link className="dropdown-item" to={"/categories"}>
-          </Link> */}
+      <div className="container-fluid category-container px-5 py-2 bg-dark text-light ">
+        <div class="container">
+          <div className=" d-md-inline-block">
+            All Categories
+            {/* <Link className="dropdown-item" to={"/categories"}>
+            </Link> */}
+          </div>
+          <ul className=" category-show d-inline-block p-0">
+            {categories?.map((c) => (
+              <li>
+                <Link className="dropdown-item" to={`/category/${c.slug}`}>
+                  {c.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <ul className=" category-show d-inline-block p-0">
-          {categories?.map((c) => (
-            <li>
-              <Link className="dropdown-item" to={`/category/${c.slug}`}>
-                {c.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
       </div>
       {/* carousel */}
       <div
         id="carouselExampleIndicators"
-        className="carousel slide"
+        className="carousel slide carousel-slides"
         data-bs-ride="carousel"
+        
       >
         <div className="carousel-indicators">
           <button
@@ -292,7 +294,7 @@ const HomePage = () => {
           <Link className="dropdown-item" to={`/product/Samsung-Galaxy-F55-5G`}>
             <img
               src="images/banner11.webp"
-              className="d-block w-100"
+              className="d-block slide-img w-100"
               alt="..."
             />
             </Link>
@@ -301,7 +303,7 @@ const HomePage = () => {
           <Link className="dropdown-item" to={`/product/Motorola-Edge-50-Pro-5G`}>
             <img
               src="images/carousel-2.jpg"
-              className="d-block w-100"
+              className="d-block slide-img w-100"
               alt="..."
             />
             </Link>
@@ -310,7 +312,7 @@ const HomePage = () => {
           <Link className="dropdown-item" to={`/product/Motorola-Edge-50-Fusion-(Marshmallow-Blue-128-GB)-(8-GB-RAM)JustHere`}>
             <img
               src="images/banner12.webp"
-              className="d-block w-100"
+              className="d-block slide-img w-100"
               alt="..."
             />
             </Link>
@@ -320,7 +322,7 @@ const HomePage = () => {
           <Link className="dropdown-item" to={`/product/Poco-F6-5G-(12GB-RAM-+256GB)`}>
             <img
               src="images/banner13.webp"
-              className="d-block w-100"
+              className="d-block slide-img w-100"
               alt="..."
             />
             </Link>
@@ -357,8 +359,8 @@ const HomePage = () => {
         <Carousel responsive={responsive}>
           {mobileproducts?.map((p) => (
             <div
-              className="card m-2 text-center shadow"
-              style={{ width: "12rem" }}
+              className="card m-2 text-center shadow product"
+              
             >
               <a
                 onClick={() => navigate(`/product/${p.slug}`)}

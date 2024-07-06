@@ -9,6 +9,7 @@
     border: none;
     border-radius: 20px 0px 0px 20px;
     outline-offset: 0;
+    width: auto;
 }
 
 .search-btn{
@@ -18,8 +19,8 @@
     border-radius: 0px 20px 20px 0px;
 }
 
-@media screen and (max-width: 325px) {
+/* @media screen and (max-width: 325px) {
     .search-input{
         width: 25px;
     }
-}
+} */
