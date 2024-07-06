@@ -564,12 +564,12 @@ const HomePage = () => {
       {/* All products */}
       <div className="container">
       
-        <h1 className="text-center all ">Products Available</h1>
+        <h1 className="text-center all ">All Product</h1>
         
         <div className="d-flex flex-wrap">
           {products?.map((p) => (
             <div
-              className="card m-2 text-center shadow"
+              className="card all-product m-2 text-center shadow"
               style={{ width: "12rem" }}
             >
               <a
