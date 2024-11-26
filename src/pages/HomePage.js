@@ -268,7 +268,7 @@ const HomePage = () => {
            {/* carousel */}
         <div
           id="carouselExampleIndicators"
-          className="carousel slide carousel-slides"
+          className="carousel slide carousel-slides d-none d-md-block"
           data-bs-ride="carousel"
         >
           <div className="carousel-indicators">

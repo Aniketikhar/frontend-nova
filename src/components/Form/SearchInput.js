@@ -5,19 +5,21 @@ import { useNavigate } from "react-router-dom";
 import './SearchInput.css';
 
 const SearchInput = () => {
-  const [values, setValues] = useSearch();
+  const {values, setValues, setSearchLoading} = useSearch();
   const navigate = useNavigate();
   const ref = useRef("")
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setSearchLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/search/${values.keyword}`
       );
       setValues({ ...values, results: data });
       navigate("/search");
       ref.current.value = "";
+      setSearchLoading(false);
     } catch (error) {
       console.log(error);
     }

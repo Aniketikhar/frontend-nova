@@ -7,17 +7,20 @@ const CategoryProduct = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (params?.slug) getPrductsByCat();
   }, [params?.slug]);
   const getPrductsByCat = async () => {
     try {
+      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/product-category/${params.slug}`
       );
       setProducts(data?.products);
       setCategory(data?.category);
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -31,39 +34,47 @@ const CategoryProduct = () => {
         <div className="row">
           <div className="col-12">
             <div className="d-flex flex-wrap">
-              {products?.map((p) => (
-               <div
-               className="card m-2 text-center shadow"
-               style={{ width: "12rem" }}
-             >
-               <a
-                 onClick={() => navigate(`/product/${p.slug}`)}
-                 style={{ cursor: "pointer" }}
-               >
-                 <img
-                   src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                   className="card-img-top px-3 py-2"
-                   style={{
-                     height: "250px",
-                     maxWidth: "100%",
-                     maxHeight: "250px",
-                     objectFit: "contain",
-                   }}
-                   alt={p.name}
-                 />
-                 <div className="card-body text-start">
-                   <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
- 
-                   <p className="card-text fw-bold">
-                     {p?.price?.toLocaleString("en-IN", {
-                       style: "currency",
-                       currency: "INR",
-                     })}
-                   </p>
-                 </div>
-               </a>
-             </div>
-              ))}
+              {loading ? (
+                <div className="loaderWrap">
+                  <span className="loader"></span>
+                </div>
+              ) : (
+                products?.map((p) => (
+                  <div
+                    className="card m-1 text-center shadow"
+                    style={{ width: "11rem" }}
+                  >
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3 py-2"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))
+              )}
             </div>
             {/* <div className="m-2 p-3">
             {products && products.length < total && (

@@ -143,10 +143,10 @@ const Header = () => {
                   </div>
                 </li>
             </ul>
-            <form role="search">
+            <div role="search">
                 <SearchInput />
               
-            </form>
+            </div>
           </div>
         </div>
       </nav>
