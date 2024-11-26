@@ -30,11 +30,13 @@ const HomePage = () => {
   //get all cat
   const getAllCategory = async () => {
     try {
+      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/category/get-category`
       );
       if (data?.success) {
         setCategories(data?.category);
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
@@ -224,7 +226,7 @@ const HomePage = () => {
       items: 5,
     },
     tablet: {
-      breakpoint: { max: 1024, min: 756},
+      breakpoint: { max: 1024, min: 756 },
       items: 3,
     },
     mobile: {
@@ -234,389 +236,416 @@ const HomePage = () => {
   };
 
   return (
-    <Layout title={"All Products - Best offers "}>
-      {/* this show all categories */}
-      <div className="container-fluid category-container px-5 py-2 bg-dark text-light ">
-        <div class="container">
-          <div className=" d-md-inline-block">
-            All Categories
-            {/* <Link className="dropdown-item" to={"/categories"}>
+    <>
+      <Layout title={"All Products - Best offers "}>
+        {/* this show all categories */}
+        <div className="container-fluid category-container px-5 py-2 text-light ">
+          <div class="container">
+            <div className=" d-md-inline-block">
+              All Categories
+              {/* <Link className="dropdown-item" to={"/categories"}>
             </Link> */}
-          </div>
-          <ul className=" category-show d-inline-block p-0">
-            {categories?.map((c) => (
-              <li>
-                <Link className="dropdown-item" to={`/category/${c.slug}`}>
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      {/* carousel */}
-      <div
-        id="carouselExampleIndicators"
-        className="carousel slide carousel-slides"
-        data-bs-ride="carousel"
-        
-      >
-        <div className="carousel-indicators">
-          <button
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide-to={0}
-            className="active"
-            aria-current="true"
-            aria-label="Slide 1"
-          />
-          <button
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide-to={1}
-            aria-label="Slide 2"
-          />
-          <button
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide-to={2}
-            aria-label="Slide 3"
-          />
-          <button
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide-to={3}
-            aria-label="Slide 4"
-          />
-        </div>
-        <div className="carousel-inner">
-          <div className="carousel-item active" data-bs-interval="3000">
-          <Link className="dropdown-item" to={`/product/Samsung-Galaxy-F55-5G`}>
-            <img
-              src="images/banner11.webp"
-              className="d-block slide-img w-100"
-              alt="..."
-            />
-            </Link>
-          </div>
-          <div className="carousel-item" data-bs-interval="3000">
-          <Link className="dropdown-item" to={`/product/Motorola-Edge-50-Pro-5G`}>
-            <img
-              src="images/carousel-2.jpg"
-              className="d-block slide-img w-100"
-              alt="..."
-            />
-            </Link>
-          </div>
-          <div className="carousel-item" data-bs-interval="3000">
-          <Link className="dropdown-item" to={`/product/Motorola-Edge-50-Fusion-(Marshmallow-Blue-128-GB)-(8-GB-RAM)JustHere`}>
-            <img
-              src="images/banner12.webp"
-              className="d-block slide-img w-100"
-              alt="..."
-            />
-            </Link>
-            
-          </div>
-          <div className="carousel-item" data-bs-interval="3000">
-          <Link className="dropdown-item" to={`/product/Poco-F6-5G-(12GB-RAM-+256GB)`}>
-            <img
-              src="images/banner13.webp"
-              className="d-block slide-img w-100"
-              alt="..."
-            />
-            </Link>
+            </div>
+            <ul className=" category-show d-inline-block p-0">
+              {categories?.map((c) => (
+                <li>
+                  <Link className="dropdown-item" to={`/category/${c.slug}`}>
+                    {c.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        <button
-          className="carousel-control-prev"
-          type="button"
-          data-bs-target="#carouselExampleIndicators"
-          data-bs-slide="prev"
+       
+
+        {loading ? (
+          <div className="loaderWrap">
+            <span className="loader"></span>
+          </div>
+        ) : (
+          <>
+           {/* carousel */}
+        <div
+          id="carouselExampleIndicators"
+          className="carousel slide carousel-slides"
+          data-bs-ride="carousel"
         >
-          <span className="carousel-control-prev-icon" aria-hidden="true" />
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-          className="carousel-control-next"
-          type="button"
-          data-bs-target="#carouselExampleIndicators"
-          data-bs-slide="next"
-        >
-          <span className="carousel-control-next-icon" aria-hidden="true" />
-          <span className="visually-hidden">Next</span>
-        </button>
-      </div>
-
-      {/* products by category mobiles */}
-      <div className="container my-5 rounded-4 bg-body-tertiary">
-        
-          <Link className="dropdown-item" to={`/category/mobiles`}>
-          <h3 className=" mobile pt-4 ms-4">
-                Mobiles
-                </h3>
-              </Link>
-        <Carousel responsive={responsive}>
-          {mobileproducts?.map((p) => (
-            <div
-              className="card m-2 text-center shadow product"
-              
-            >
-              <a
-                onClick={() => navigate(`/product/${p.slug}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top px-3 py-2"
-                  style={{
-                    height: "250px",
-                    maxWidth: "100%",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
-                  alt={p.name}
-                />
-                <div className="card-body text-start">
-                  <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-
-                  <p className="card-text fw-bold">
-                    {p?.price?.toLocaleString("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-                  </p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-
-      {/* products by category TV */}
-      <div className="container my-5 bg-body-tertiary rounded-4 ">
-      <Link className="dropdown-item" to={`/category/tvs`}>
-        <h3 className="pt-4 ps-4">TVs</h3>
-        </Link>
-        <Carousel responsive={responsive}>
-          {tvproducts?.map((p) => (
-            <div
-              className="card m-2 text-center shadow"
-              style={{ width: "12rem" }}
-            >
-              <a
-                onClick={() => navigate(`/product/${p.slug}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top px-3"
-                  style={{
-                    height: "250px",
-                    maxWidth: "100%",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
-                  alt={p.name}
-                />
-                <div className="card-body text-start">
-                  <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-
-                  <p className="card-text fw-bold">
-                    {p?.price?.toLocaleString("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-                  </p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-
-      {/* products by category laptops */}
-      <div className="container my-5 bg-body-tertiary rounded-4 ">
-      <Link className="dropdown-item" to={`/category/laptops`}>
-        <h3 className="ps-4 pt-4">Laptops</h3>
-        </Link>
-        <Carousel responsive={responsive}>
-          {laptopsproducts?.map((p) => (
-            <div
-              className="card m-2 text-center shadow"
-              style={{ width: "12rem" }}
-            >
-              <a
-                onClick={() => navigate(`/product/${p.slug}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top px-3"
-                  style={{
-                    height: "250px",
-                    maxWidth: "100%",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
-                  alt={p.name}
-                />
-                <div className="card-body text-start">
-                  <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-
-                  <p className="card-text fw-bold">
-                    {p?.price?.toLocaleString("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-                  </p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-
-      {/* products by category Headphones */}
-      <div className="container my-5 bg-body-tertiary rounded-4">
-      <Link className="dropdown-item" to={`/category/headphones`}>
-        <h3 className="ps-4 pt-4">Headphones</h3>
-        </Link>
-        <Carousel responsive={responsive}>
-          {headphoneproducts?.map((p) => (
-            <div
-              className="card m-2 text-center shadow"
-              style={{ width: "12rem" }}
-            >
-              <a
-                onClick={() => navigate(`/product/${p.slug}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top px-3"
-                  style={{
-                    height: "250px",
-                    maxWidth: "100%",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
-                  alt={p.name}
-                />
-                <div className="card-body text-start">
-                  <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-
-                  <p className="card-text fw-bold">
-                    {p?.price?.toLocaleString("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-                  </p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-
-      {/* product by watches */}
-      <div className="container my-5 bg-body-tertiary rounded-4">
-      <Link className="dropdown-item" to={`/category/watches`}>
-        <h3 className="ps-4 pt-4">Watches</h3>
-        </Link>
-        <Carousel responsive={responsive}>
-          {watchesproducts?.map((p) => (
-            <div
-              className="card m-2 text-center shadow"
-              style={{ width: "12rem" }}
-            >
-              <a
-                onClick={() => navigate(`/product/${p.slug}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top px-3"
-                  style={{
-                    height: "250px",
-                    maxWidth: "100%",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
-                  alt={p.name}
-                />
-                <div className="card-body text-start">
-                  <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-
-                  <p className="card-text fw-bold">
-                    {p?.price?.toLocaleString("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-                  </p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </Carousel>
-      </div>
-
-      {/* All products */}
-      <div className="container">
-      
-        <h1 className="text-center all ">All Product</h1>
-        
-        <div className="d-flex flex-wrap">
-          {products?.map((p) => (
-            <div
-              className="card all-product m-2 text-center shadow"
-              style={{ width: "12rem" }}
-            >
-              <a
-                onClick={() => navigate(`/product/${p.slug}`)}
-                style={{ cursor: "pointer" }}
-              >
-                <img
-                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                  className="card-img-top px-3"
-                  style={{
-                    height: "250px",
-                    maxWidth: "100%",
-                    maxHeight: "250px",
-                    objectFit: "contain",
-                  }}
-                  alt={p.name}
-                />
-                <div className="card-body text-start">
-                  <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-
-                  <p className="card-text fw-bold">
-                    {p?.price?.toLocaleString("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-                  </p>
-                </div>
-              </a>
-            </div>
-          ))}
-        </div>
-        <div className="m-2 p-3">
-          {products && products.length < total && (
+          <div className="carousel-indicators">
             <button
-              className="btn text-dark btn-warning"
-              // style={{ background: "orangered" }}
-              onClick={(e) => {
-                e.preventDefault();
-                setPage(page + 1);
-              }}
-            >
-              {loading ? "Loading ..." : "Loadmore"}
-            </button>
-          )}
+              type="button"
+              data-bs-target="#carouselExampleIndicators"
+              data-bs-slide-to={0}
+              className="active"
+              aria-current="true"
+              aria-label="Slide 1"
+            />
+            <button
+              type="button"
+              data-bs-target="#carouselExampleIndicators"
+              data-bs-slide-to={1}
+              aria-label="Slide 2"
+            />
+            <button
+              type="button"
+              data-bs-target="#carouselExampleIndicators"
+              data-bs-slide-to={2}
+              aria-label="Slide 3"
+            />
+            <button
+              type="button"
+              data-bs-target="#carouselExampleIndicators"
+              data-bs-slide-to={3}
+              aria-label="Slide 4"
+            />
+          </div>
+          <div className="carousel-inner">
+            <div className="carousel-item active" data-bs-interval="3000">
+              <Link
+                className="dropdown-item"
+                to={`/product/Samsung-Galaxy-F55-5G`}
+              >
+                <img
+                  src="images/banner11.webp"
+                  className="d-block slide-img w-100"
+                  alt="..."
+                />
+              </Link>
+            </div>
+            <div className="carousel-item" data-bs-interval="3000">
+              <Link
+                className="dropdown-item"
+                to={`/product/Motorola-Edge-50-Pro-5G`}
+              >
+                <img
+                  src="images/carousel-2.jpg"
+                  className="d-block slide-img w-100"
+                  alt="..."
+                />
+              </Link>
+            </div>
+            <div className="carousel-item" data-bs-interval="3000">
+              <Link
+                className="dropdown-item"
+                to={`/product/Motorola-Edge-50-Fusion-(Marshmallow-Blue-128-GB)-(8-GB-RAM)JustHere`}
+              >
+                <img
+                  src="images/banner12.webp"
+                  className="d-block slide-img w-100"
+                  alt="..."
+                />
+              </Link>
+            </div>
+            <div className="carousel-item" data-bs-interval="3000">
+              <Link
+                className="dropdown-item"
+                to={`/product/Poco-F6-5G-(12GB-RAM-+256GB)`}
+              >
+                <img
+                  src="images/banner13.webp"
+                  className="d-block slide-img w-100"
+                  alt="..."
+                />
+              </Link>
+            </div>
+          </div>
+          <button
+            className="carousel-control-prev"
+            type="button"
+            data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="prev"
+          >
+            <span className="carousel-control-prev-icon" aria-hidden="true" />
+            <span className="visually-hidden">Previous</span>
+          </button>
+          <button
+            className="carousel-control-next"
+            type="button"
+            data-bs-target="#carouselExampleIndicators"
+            data-bs-slide="next"
+          >
+            <span className="carousel-control-next-icon" aria-hidden="true" />
+            <span className="visually-hidden">Next</span>
+          </button>
         </div>
-      </div>
-    </Layout>
+
+        {/* products by category mobiles */}
+            <div className="container my-5 rounded-4 bg-body-tertiary">
+              <Link className="dropdown-item" to={`/category/mobiles`}>
+                <h3 className=" mobile pt-4 ms-4">Mobiles</h3>
+              </Link>
+              <Carousel responsive={responsive}>
+                {mobileproducts?.map((p) => (
+                  <div className="card m-2 text-center shadow product">
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3 py-2"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+
+            {/* products by category TV */}
+            <div className="container my-5 bg-body-tertiary rounded-4 ">
+              <Link className="dropdown-item" to={`/category/tvs`}>
+                <h3 className="pt-4 ps-4">TVs</h3>
+              </Link>
+              <Carousel responsive={responsive}>
+                {tvproducts?.map((p) => (
+                  <div
+                    className="card m-2 text-center shadow"
+                    style={{ width: "12rem" }}
+                  >
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+
+            {/* products by category laptops */}
+            <div className="container my-5 bg-body-tertiary rounded-4 ">
+              <Link className="dropdown-item" to={`/category/laptops`}>
+                <h3 className="ps-4 pt-4">Laptops</h3>
+              </Link>
+              <Carousel responsive={responsive}>
+                {laptopsproducts?.map((p) => (
+                  <div
+                    className="card m-2 text-center shadow"
+                    style={{ width: "12rem" }}
+                  >
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+
+            {/* products by category Headphones */}
+            <div className="container my-5 bg-body-tertiary rounded-4">
+              <Link className="dropdown-item" to={`/category/headphones`}>
+                <h3 className="ps-4 pt-4">Headphones</h3>
+              </Link>
+              <Carousel responsive={responsive}>
+                {headphoneproducts?.map((p) => (
+                  <div
+                    className="card m-2 text-center shadow"
+                    style={{ width: "12rem" }}
+                  >
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+
+            {/* product by watches */}
+            <div className="container my-5 bg-body-tertiary rounded-4">
+              <Link className="dropdown-item" to={`/category/watches`}>
+                <h3 className="ps-4 pt-4">Watches</h3>
+              </Link>
+              <Carousel responsive={responsive}>
+                {watchesproducts?.map((p) => (
+                  <div
+                    className="card m-2 text-center shadow"
+                    style={{ width: "12rem" }}
+                  >
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </Carousel>
+            </div>
+
+            {/* All products */}
+            <div className="container">
+              <h1 className="text-center all ">All Product</h1>
+
+              <div className="d-flex flex-wrap">
+                {products?.map((p) => (
+                  <div
+                    className="card all-product m-2 text-center shadow"
+                    style={{ width: "12rem" }}
+                  >
+                    <a
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        className="card-img-top px-3"
+                        style={{
+                          height: "250px",
+                          maxWidth: "100%",
+                          maxHeight: "250px",
+                          objectFit: "contain",
+                        }}
+                        alt={p.name}
+                      />
+                      <div className="card-body text-start">
+                        <h6 className="card-title">
+                          {p.name.substring(0, 32)}...
+                        </h6>
+
+                        <p className="card-text fw-bold">
+                          {p?.price?.toLocaleString("en-IN", {
+                            style: "currency",
+                            currency: "INR",
+                          })}
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </div>
+              <div className="m-2 p-3">
+                {products && products.length < total && (
+                  <button
+                    className="btn text-dark btn-warning"
+                    // style={{ background: "orangered" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage(page + 1);
+                    }}
+                  >
+                    {loading ? "Loading ..." : "Loadmore"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </Layout>
+    </>
   );
 };
 
