@@ -306,7 +306,7 @@ const Register = () => {
                       <img
                         src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
                         className="img-fluid"
-                        alt="Sample image"
+                        alt="Registration visual"
                       />
                     </div>
                   </div>

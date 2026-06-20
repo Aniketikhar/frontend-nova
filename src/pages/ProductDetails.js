@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./../components/Layout/Layout";
 import axios from "axios";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
 import toast from "react-hot-toast";
@@ -18,7 +18,6 @@ const splitDescription = (description) =>
 
 const ProductDetails = () => {
   const params = useParams();
-  const navigate = useNavigate();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [auth] = useAuth();
@@ -30,6 +29,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     if (params?.slug) getProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params?.slug]);
 
   const getProduct = async () => {
@@ -65,7 +65,6 @@ const ProductDetails = () => {
 
   const handleAddToCart = () => {
     // Add qty copies (or merge if already in cart)
-    const existing = cart.filter((i) => i._id === product._id);
     const toAdd = Array(qty).fill(product);
     const updatedCart = [...cart, ...toAdd];
     setCart(updatedCart);

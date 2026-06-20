@@ -1,8 +1,8 @@
 import Layout from "./../components/Layout/Layout";
-import React , {useState} from "react";
+import React from "react";
 import "./Contact.css";
 const Contact = () => {
-  const [result, setResult] = React.useState("");
+  const [, setResult] = React.useState("");
 
   const onSubmit = async (event) => {
     event.preventDefault();

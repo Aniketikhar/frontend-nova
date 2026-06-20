@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./../components/Layout/Layout";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "../context/cart";
-import axios from "axios";
 import { Link } from "react-router-dom";
-import useCategory from "../hooks/useCategory";
+import axios from "axios";
 import "./HomePage.css";
 import ProductCard from "../components/ProductCard/ProductCard";
 import { SkeletonGrid } from "../components/SkeletonCard/SkeletonCard";
@@ -22,8 +19,6 @@ const CATEGORY_META = {
 };
 
 const HomePage = () => {
-  const [cart, setCart] = useCart();
-  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [tvproducts, setTVProducts] = useState([]);
   const [mobileproducts, setMobileProducts] = useState([]);
@@ -31,12 +26,12 @@ const HomePage = () => {
   const [headphoneproducts, setHeadphoneProducts] = useState([]);
   const [watchesproducts, setWatchesProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [checked, setChecked] = useState([]);
-  const [radio, setRadio] = useState([]);
+  const [checked] = useState([]);
+  const [radio] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [catLoading, setCatLoading] = useState(true);
+
 
   const getAllCategory = async () => {
     try {
@@ -125,6 +120,7 @@ const HomePage = () => {
   useEffect(() => {
     if (page === 1) return;
     loadMore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const loadMore = async () => {
@@ -141,15 +137,10 @@ const HomePage = () => {
     }
   };
 
-  const handleFilter = (value, id) => {
-    let all = [...checked];
-    if (value) { all.push(id); } else { all = all.filter((c) => c !== id); }
-    setChecked(all);
-  };
+
 
   useEffect(() => {
     if (!checked.length || !radio.length) {
-      setCatLoading(true);
       Promise.all([
         getAllProducts(),
         getProductByTV(),
@@ -157,12 +148,14 @@ const HomePage = () => {
         getProductsByLaptops(),
         getProductsByHeadphone(),
         getProductsByWatch(),
-      ]).finally(() => setCatLoading(false));
+      ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked.length, radio.length]);
 
   useEffect(() => {
     if (checked.length || radio.length) filterProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checked, radio]);
 
   const filterProduct = async () => {

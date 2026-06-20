@@ -1,13 +1,11 @@
 import "./Dashboard.css";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import UserMenu from "../../components/Layout/UserMenu";
 import Layout from "./../../components/Layout/Layout";
 import { useAuth } from "../../context/auth";
-import toast from "react-hot-toast";
-import axios from "axios";
 
 const Dashboard = () => {
-  const [auth, setAuth] = useAuth();
+  const [auth] = useAuth();
   //state
 
   return (
@@ -30,7 +28,7 @@ const Dashboard = () => {
                               <img
                                 src="https://img.icons8.com/bubbles/100/000000/user.png"
                                 className="img-radius"
-                                alt="User-Profile-Image"
+                                alt="User Profile"
                               />
                             </div>
                             <h6 className="f-w-600">{auth?.user?.name}</h6>

@@ -6,7 +6,6 @@ import useCategory from "../../hooks/useCategory";
 import { useCart } from "../../context/cart";
 import "./Header.css";
 import { BsCart3 } from "react-icons/bs";
-import { MdOutlineStorefront } from "react-icons/md";
 
 const Header = () => {
   const [auth, setAuth] = useAuth();

@@ -72,7 +72,7 @@ const Profile = () => {
                               <img
                                 src="https://img.icons8.com/bubbles/100/000000/user.png"
                                 className="img-radius"
-                                alt="User-Profile-Image"
+                                alt="User Profile"
                               />
                             </div>
                             <h6 className="f-w-600">{auth?.user?.name}</h6>
