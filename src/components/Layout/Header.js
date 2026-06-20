@@ -36,6 +36,16 @@ const Header = () => {
           NovaShop
         </Link>
 
+        {/* Mobile Toggler Actions (Cart shortcut on mobile) */}
+        <div className="d-flex align-items-center gap-3 d-lg-none ms-auto me-3">
+          <NavLink to="/cart" className="nova-cart-wrap text-decoration-none">
+            <BsCart3 className="nova-cart-icon" />
+            {cart?.length > 0 && (
+              <span className="nova-cart-badge">{cart.length}</span>
+            )}
+          </NavLink>
+        </div>
+
         {/* Mobile Toggler */}
         <button
           className="navbar-toggler nova-toggler"
@@ -83,12 +93,12 @@ const Header = () => {
           </ul>
 
           {/* Right side */}
-          <div className="d-flex align-items-center gap-3 mt-2 mt-lg-0">
+          <div className="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3 mt-2 mt-lg-0">
             {/* Search */}
             <SearchInput />
 
-            {/* Cart */}
-            <NavLink to="/cart" className="nova-cart-wrap text-decoration-none">
+            {/* Cart (Desktop only) */}
+            <NavLink to="/cart" className="nova-cart-wrap text-decoration-none d-none d-lg-flex">
               <BsCart3 className="nova-cart-icon" />
               {cart?.length > 0 && (
                 <span className="nova-cart-badge">{cart.length}</span>
@@ -97,11 +107,11 @@ const Header = () => {
 
             {/* Auth */}
             {!auth?.user ? (
-              <div className="d-flex gap-2">
-                <NavLink to="/login" className="nova-btn-signin nav-link">
+              <div className="d-flex flex-column flex-sm-row gap-2">
+                <NavLink to="/login" className="nova-btn-signin nav-link text-center">
                   Sign In
                 </NavLink>
-                <NavLink to="/register" className="nova-btn-signup nav-link">
+                <NavLink to="/register" className="nova-btn-signup nav-link text-center">
                   Sign Up
                 </NavLink>
               </div>

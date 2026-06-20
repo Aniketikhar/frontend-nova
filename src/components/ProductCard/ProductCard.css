@@ -97,13 +97,62 @@
 
 /* ===========================
    PRODUCT GRID
-=========================== */
+/* ===========================
+   PRODUCT GRID
+ =========================== */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
 }
+
+.product-card__mob-add-btn {
+  display: none;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 12px rgba(255, 69, 0, 0.35);
+  z-index: 5;
+}
+
+.product-card__mob-add-btn:hover {
+  background: var(--primary-light);
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .product-card__overlay {
+    display: none !important;
+  }
+  .product-card__mob-add-btn {
+    display: flex;
+  }
+}
+
 @media (max-width: 576px) {
   .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .product-card__img-wrap { height: 150px; }
+  .product-card__body {
+    padding: 10px 10px 12px !important;
+    gap: 2px !important;
+  }
+  .product-card__name {
+    font-size: 0.82rem !important;
+    line-height: 1.3 !important;
+  }
+  .product-card__price {
+    font-size: 0.9rem !important;
+    margin-top: 2px !important;
+  }
 }

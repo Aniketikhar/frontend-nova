@@ -186,4 +186,17 @@
   .pd-price { font-size: 1.6rem; }
   .pd-actions { flex-direction: column; align-items: stretch; }
   .pd-add-btn { min-width: unset; }
+  .pd-img-wrap { min-height: 260px; padding: 16px; }
+  .pd-img { max-height: 240px; }
+}
+
+@media (max-width: 576px) {
+  .pd-breadcrumb {
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .pd-breadcrumb::-webkit-scrollbar {
+    display: none;
+  }
 }

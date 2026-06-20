@@ -8,11 +8,11 @@ const User = () => {
     <Layout>
         <div className="container-fluid m-3 p-3">
           <div className="row">
-            <div className="col-md-3">
+            <div className="col-md-3 mb-4 mb-md-0">
               <AdminMenu />
             </div>
             <div className="col-md-9">
-              <div className="card w-75 p-3">
+              <div className="card w-100 w-md-75 p-3">
                user
               </div>
             </div>

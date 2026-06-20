@@ -46,7 +46,17 @@
 }
 .search-btn:hover { opacity: 0.9; transform: scale(1.05); }
 
-@media (max-width: 768px) {
-  .search-input { width: 150px; }
-  .search-input:focus { width: 170px; }
+@media (max-width: 991px) {
+  .search {
+    width: 100%;
+  }
+  .search form {
+    width: 100%;
+  }
+  .search-input {
+    width: 100% !important;
+  }
+  .search-input:focus {
+    width: 100% !important;
+  }
 }

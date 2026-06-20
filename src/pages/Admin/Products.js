@@ -26,9 +26,9 @@ const Products = () => {
   }, []);
   return (
     <Layout>
-      <div className="container-fluid p-5">
+      <div className="container-fluid p-3 p-md-5">
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-md-3 mb-4 mb-md-0">
             <AdminMenu />
           </div>
           <div className="col-md-9 ">
@@ -41,8 +41,8 @@ const Products = () => {
                   className="product-link"
                 >
                   <div className="card m-2 p-2">
-                    <div className="row">
-                      <div className="col-4">
+                    <div className="row flex-column flex-sm-row">
+                      <div className="col-12 col-sm-4 text-center mb-3 mb-sm-0">
                         <img
                           src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
                           className="card-img-top"
@@ -50,7 +50,7 @@ const Products = () => {
                           alt={p.name}
                         />
                       </div>
-                      <div className="col-8">
+                      <div className="col-12 col-sm-8">
                         <div className="card-body">
                           <h5 className="card-title">{p.name}</h5>
                           <p className="card-text">{p.description.substring(0, 400)}...</p>

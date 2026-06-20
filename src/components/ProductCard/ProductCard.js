@@ -41,6 +41,13 @@ const ProductCard = ({ product }) => {
           <BsCartPlus />
           ADD TO CART
         </div>
+        <button
+          className="product-card__mob-add-btn"
+          onClick={handleAddToCart}
+          title="Add to Cart"
+        >
+          <BsCartPlus />
+        </button>
       </div>
 
       <div className="product-card__body">

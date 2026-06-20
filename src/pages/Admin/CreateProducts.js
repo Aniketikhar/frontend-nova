@@ -67,14 +67,14 @@ const CreateProduct = () => {
 
   return (
     <Layout title={"Dashboard - Create Product"}>
-      <div className="container-fluid p-5">
+      <div className="container-fluid p-3 p-md-5">
         <div className="row">
-          <div className="col-md-3">
+          <div className="col-md-3 mb-4 mb-md-0">
             <AdminMenu />
           </div>
           <div className="col-md-9">
             <h1>Add Product</h1>
-            <div className="m-1 w-75">
+            <div className="m-1 w-100 w-md-75">
               <Select
                 bordered={false}
                 placeholder="Select a category"
