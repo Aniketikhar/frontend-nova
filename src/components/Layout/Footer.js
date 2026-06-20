@@ -1,182 +1,125 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./Footer.css";
+import { BsGithub, BsTwitterX, BsInstagram, BsLinkedin } from "react-icons/bs";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <>
-      <footer id="footer">
-        <div className="section">
-          <div className="container">
-            <div className="row">
-              <div className="col-12 col-md-6 col-lg-3">
-                <div className="footer">
-                  <h2 className="footer-title">NovaShop</h2>
-                  <p>
-                    Discover seamless shopping with NovaShop - your ultimate
-                    eCommerce solution for a stellar online store experience.
-                  </p>
-                  <ul className="footer-links list-unstyled">
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-map" />
-                        Jagnade Square, Nagpur
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-phone" />
-                        +91 9518926198
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#">
-                        <i className="fa fa-envelope" />
-                        novashop@ecommerce.com
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="col-12 col-md-6 col-lg-3">
-                <div className="footer">
-                  <h3 className="footer-title">Categories</h3>
-                  <ul className="footer-links list-unstyled">
-                    <li>
-                      <Link className="dropdown-item" to={`/category/mobiles`}>
-                        Mobiles
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to={`/category/laptops`}>
-                        Laptops
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to={`/category/tvs`}>
-                        TV's
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        className="dropdown-item"
-                        to={`/category/headphones`}
-                      >
-                        Headphones
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to={`/category/watches`}>
-                        Watches
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6 col-lg-3 ">
-                <div className="footer">
-                  <h3 className="footer-title">Informations</h3>
-                  <ul className="footer-links list-unstyled">
-                    <li>
-                      <a href="/about">About Us</a>
-                    </li>
-                    <li>
-                      <a href="/contact">Contact Us</a>
-                    </li>
-                    <li>
-                      <a href="/policy">Privacy Policy</a>
-                    </li>
-                    <li>
-                      <a href="/tandc">Terms &amp; Conditions</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="col-12 col-md-6 col-lg-3">
-                <div className="footer">
-                  <h3 className="footer-title">Services</h3>
-                  <ul className="footer-links list-unstyled">
-                    <li>
-                      <a href="dashboard/user/profile">My Account</a>
-                    </li>
-                    <li>
-                      <a href="/cart">View Cart</a>
-                    </li>
-                    
-                    <li>
-                      <a href="/dashboard/user/orders">Track My Order</a>
-                    </li>
-                   
-                  </ul>
-                </div>
-              </div>
-            </div>
+    <footer className="nova-footer">
+      {/* Newsletter bar */}
+      <div className="footer-newsletter">
+        <div className="container footer-newsletter__inner">
+          <div>
+            <h3 className="footer-newsletter__title">Stay in the loop 📬</h3>
+            <p className="footer-newsletter__sub">Get the latest deals and offers directly in your inbox.</p>
           </div>
+          <form className="footer-newsletter__form" onSubmit={(e) => e.preventDefault()}>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="footer-newsletter__input"
+            />
+            <button type="submit" className="footer-newsletter__btn">Subscribe</button>
+          </form>
         </div>
-        <div id="bottom-footer" className="section">
-          <div className="container">
-            <div className="row">
-              <div className="col-md-12 text-center">
-                <ul className="footer-payments">
-                  <li>
-                    <a href="#">
-                      <i class="fa-brands fa-cc-visa text-secondary" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa fa-credit-card text-secondary" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa-brands fa-cc-paypal text-secondary" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa-brands fa-cc-mastercard text-secondary" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa-brands fa-cc-discover text-secondary" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa-brands fa-cc-amex text-secondary" />
-                    </a>
-                  </li>
-                </ul>
-                <span className="copyright mb-3">
-                  Copyright &copy; 2024. All Rights Reserved | This Project is
-                  made by{" "}
-                  <a
-                    href="/"
-                    target="_blank"
-                    class="fs-5 fst-italic text-decoration-none"
-                    style={{ color: "#DC3545" }}
-                  >
-                    NovaShop
+      </div>
+
+      {/* Main footer */}
+      <div className="footer-main">
+        <div className="container">
+          <div className="row g-4">
+            {/* Brand */}
+            <div className="col-12 col-md-6 col-lg-4">
+              <div className="footer-brand">
+                <h2 className="footer-brand__name">🛍️ NovaShop</h2>
+                <p className="footer-brand__desc">
+                  Discover seamless shopping with NovaShop — your ultimate
+                  e-commerce destination for premium electronics.
+                </p>
+                <div className="footer-socials">
+                  <a href="https://github.com" target="_blank" rel="noreferrer" className="footer-social-link" title="GitHub">
+                    <BsGithub />
                   </a>
-                  .
-                </span>
+                  <a href="https://twitter.com" target="_blank" rel="noreferrer" className="footer-social-link" title="Twitter">
+                    <BsTwitterX />
+                  </a>
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer" className="footer-social-link" title="Instagram">
+                    <BsInstagram />
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="footer-social-link" title="LinkedIn">
+                    <BsLinkedin />
+                  </a>
+                </div>
               </div>
+            </div>
+
+            {/* Categories */}
+            <div className="col-6 col-md-3 col-lg-2">
+              <h4 className="footer-col__title">Categories</h4>
+              <ul className="footer-links">
+                <li><Link to="/category/mobiles">📱 Mobiles</Link></li>
+                <li><Link to="/category/laptops">💻 Laptops</Link></li>
+                <li><Link to="/category/tvs">📺 TVs</Link></li>
+                <li><Link to="/category/headphones">🎧 Headphones</Link></li>
+                <li><Link to="/category/watches">⌚ Watches</Link></li>
+              </ul>
+            </div>
+
+            {/* Information */}
+            <div className="col-6 col-md-3 col-lg-2">
+              <h4 className="footer-col__title">Information</h4>
+              <ul className="footer-links">
+                <li><Link to="/about">About Us</Link></li>
+                <li><Link to="/contact">Contact Us</Link></li>
+                <li><Link to="/policy">Privacy Policy</Link></li>
+                <li><Link to="/tandc">Terms & Conditions</Link></li>
+              </ul>
+            </div>
+
+            {/* Services */}
+            <div className="col-12 col-md-6 col-lg-4">
+              <h4 className="footer-col__title">Services & Contact</h4>
+              <ul className="footer-links footer-contact">
+                <li>
+                  <span className="footer-contact__icon">📍</span>
+                  Jagnade Square, Nagpur
+                </li>
+                <li>
+                  <span className="footer-contact__icon">📞</span>
+                  +91 9518926198
+                </li>
+                <li>
+                  <span className="footer-contact__icon">✉️</span>
+                  novashop@ecommerce.com
+                </li>
+              </ul>
+              <ul className="footer-links mt-3">
+                <li><Link to="/dashboard/user/profile">My Account</Link></li>
+                <li><Link to="/cart">View Cart</Link></li>
+                <li><Link to="/dashboard/user/orders">Track My Order</Link></li>
+              </ul>
             </div>
           </div>
         </div>
-      </footer>
-    </>
+      </div>
 
-    // <div className="footer">
-    //   <p className="text-center mt-3">
-    //     <Link to="/about">About</Link>|<Link to="/contact">Contact</Link>|
-    //     <Link to="/policy">Privacy Policy</Link>
-    //   </p>
-    //   <h5 className="text-center">All Right Reserved &copy; Aniket IKhar</h5>
-    // </div>
+      {/* Bottom bar */}
+      <div className="footer-bottom">
+        <div className="container footer-bottom__inner">
+          <span className="footer-bottom__copy">
+            © {currentYear} NovaShop. All Rights Reserved.
+          </span>
+          <div className="footer-payments">
+            <span title="Visa">💳</span>
+            <span title="Mastercard">🏦</span>
+            <span title="PayPal">🅿️</span>
+            <span title="UPI">📲</span>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
 

@@ -2,197 +2,240 @@ import React, { useState, useEffect } from "react";
 import Layout from "./../components/Layout/Layout";
 import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import DropIn from "braintree-web-drop-in-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import "./CartPage.css";
 
 const CartPage = () => {
-  const [auth, setAuth] = useAuth();
+  const [auth] = useAuth();
   const [cart, setCart] = useCart();
-  const [clientToken,  setClientToken] = useState("");
+  const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  //total price
+  // Compute aggregated items (merge duplicates)
+  const cartItems = React.useMemo(() => {
+    const map = {};
+    cart?.forEach((item) => {
+      if (map[item._id]) {
+        map[item._id].qty += 1;
+      } else {
+        map[item._id] = { ...item, qty: 1 };
+      }
+    });
+    return Object.values(map);
+  }, [cart]);
+
   const totalPrice = () => {
     try {
-      let total = 0;
-      cart?.map((item) => {
-        total = total + item.price;
-      });
-      return total.toLocaleString("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }); 
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //detele item
-  const removeCartItem = (pid) => {
-    try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
-    } catch (error) {
-      console.log(error);
-    }
+      const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+      return total.toLocaleString("en-IN", { style: "currency", currency: "INR" });
+    } catch { return "₹0"; }
   };
 
-  //get payment gateway token
+  const setQty = (productId, newQty) => {
+    if (newQty < 1) return;
+    // Rebuild flat cart array from aggregated items with updated qty
+    const updated = [];
+    cartItems.forEach((item) => {
+      const q = item._id === productId ? newQty : item.qty;
+      for (let i = 0; i < q; i++) {
+        const { qty, ...rest } = item;
+        updated.push(rest);
+      }
+    });
+    setCart(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+  };
+
+  const removeCartItem = (productId) => {
+    const updated = cart.filter((item) => item._id !== productId);
+    setCart(updated);
+    localStorage.setItem("cart", JSON.stringify(updated));
+    toast.success("Item removed");
+  };
+
   const getToken = async () => {
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API}/api/v1/product/braintree/token`);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/braintree/token`
+      );
       setClientToken(data?.clientToken);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
-  useEffect(() => {
-    getToken();
-  }, [auth?.token]);
 
-  //handle payments
+  useEffect(() => { getToken(); }, [auth?.token]);
+
   const handlePayment = async () => {
     try {
       setLoading(true);
       const { nonce } = await instance.requestPaymentMethod();
-      const { data } = await axios.post(`${process.env.REACT_APP_API}/api/v1/product/braintree/payment`, {
-        nonce,
-        cart,
-      });
+      await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/product/braintree/payment`,
+        { nonce, cart }
+      );
       setLoading(false);
       localStorage.removeItem("cart");
       setCart([]);
       navigate("/dashboard/user/orders");
-      toast.success("Payment Completed Successfully ");
+      toast.success("Payment Completed Successfully!");
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
   };
-  return (
-    <Layout> 
-      <div className="container py-4">
-        <div className="row">
-          <div className="col-md-12">
-            <h1 className="text-center p-2 mb-1">
-              {`Now, it's time to buy`}
-            </h1>
-            <h4 className="text-center">
-              {cart?.length
-                ? `You Have ${cart.length} items in your cart ${
-                    auth?.token ? "" : "please login to checkout"
-                  }`
-                : " Your Cart Is Empty"}
-            </h4>
-          </div>
-        </div>
-        <div className="row g-md-5">
-          <div className="col-12 col-md-8 ">
-            {cart?.map((p) => (
-              <div className="row mb-2 p-3 card text-center flex-row" key={p._id}>
-               
-                <div className="col-md-4">
-                  <img
-                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                    className=" img-fluid"
-                    alt={p.name}
-                    style={{height: '250px', maxWidth: "100%" , maxHeight: "250px" , objectFit: 'contain'}}
 
-                    // width="100px"
-                    // height={200}
-                  />
-                </div>
-                <div className="col-md-8 text-start">
-                <a onClick={() => navigate(`/product/${p.slug}`)} style={{cursor: "pointer"}}>
-                  <p>{p.brand}</p>
-                  <h5>{p.name}</h5>
-                  {/* <p>{p.description.substring(0, 30)}</p> */}
-                  <p>Price : {p.price}</p>
-                </a>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => removeCartItem(p._id)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              </div>
-            ))}
+  if (!cart?.length) {
+    return (
+      <Layout title="Your Cart — NovaShop">
+        <div className="cart-empty">
+          <span className="cart-empty__icon">🛒</span>
+          <h2>Your cart is empty</h2>
+          <p>Looks like you haven't added anything yet. Start shopping!</p>
+          <Link to="/" className="cart-empty__cta">Browse Products</Link>
+        </div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout title="Your Cart — NovaShop">
+      <div className="cart-page">
+        <div className="container">
+          <div className="cart-header">
+            <h1 className="cart-header__title">Shopping Cart</h1>
+            <span className="cart-header__count">{cart.length} item{cart.length !== 1 ? "s" : ""}</span>
           </div>
-          <div className="col-12 col-md-4 text-center ">
-            <h2>Cart Summary</h2>
-            <p>Total | Checkout | Payment</p>
-            <hr />
-            <h4>Total : {totalPrice()} </h4>
-            {auth?.user?.address ? (
-              <>
-                <div className="mb-3">
-                  <h4>Current Address</h4>
-                  <h5>{auth?.user?.address}</h5>
-                  <button
-                    className="btn btn-warning"
-                    onClick={() => navigate("/dashboard/user/profile")}
-                  >
-                    Update Address
-                  </button>
+
+          <div className="row g-4">
+            {/* Items */}
+            <div className="col-12 col-lg-8">
+              <div className="cart-items">
+                {cartItems.map((p) => (
+                  <div className="cart-item" key={p._id}>
+                    {/* Image */}
+                    <div
+                      className="cart-item__img-wrap"
+                      onClick={() => navigate(`/product/${p.slug}`)}
+                    >
+                      <img
+                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                        alt={p.name}
+                        className="cart-item__img"
+                      />
+                    </div>
+
+                    {/* Info */}
+                    <div className="cart-item__info">
+                      {p.brand && <span className="cart-item__brand">{p.brand}</span>}
+                      <h3
+                        className="cart-item__name"
+                        onClick={() => navigate(`/product/${p.slug}`)}
+                      >
+                        {p.name}
+                      </h3>
+                      <p className="cart-item__unit-price">
+                        {p?.price?.toLocaleString("en-IN", { style: "currency", currency: "INR" })} each
+                      </p>
+                    </div>
+
+                    {/* Controls */}
+                    <div className="cart-item__controls">
+                      <div className="cart-qty">
+                        <button className="cart-qty__btn" onClick={() => setQty(p._id, p.qty - 1)}>−</button>
+                        <span className="cart-qty__val">{p.qty}</span>
+                        <button className="cart-qty__btn" onClick={() => setQty(p._id, p.qty + 1)}>+</button>
+                      </div>
+                      <p className="cart-item__total">
+                        {(p.price * p.qty).toLocaleString("en-IN", { style: "currency", currency: "INR" })}
+                      </p>
+                      <button
+                        className="cart-item__remove"
+                        onClick={() => removeCartItem(p._id)}
+                        title="Remove item"
+                      >
+                        🗑
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="col-12 col-lg-4">
+              <div className="cart-summary">
+                <h2 className="cart-summary__title">Order Summary</h2>
+                <div className="cart-summary__row">
+                  <span>Subtotal ({cartItems.length} item{cartItems.length !== 1 ? "s" : ""})</span>
+                  <span>{totalPrice()}</span>
                 </div>
-              </>
-            ) : (
-              <div className="mb-3">
-                {auth?.token ? (
-                  <button
-                    className="btn btn-outline-warning"
-                    onClick={() => navigate("/dashboard/user/profile")}
-                  >
-                    Update Address
-                  </button>
+                <div className="cart-summary__row">
+                  <span>Shipping</span>
+                  <span className="cart-summary__free">FREE</span>
+                </div>
+                <div className="cart-summary__divider" />
+                <div className="cart-summary__row total">
+                  <span>Total</span>
+                  <span>{totalPrice()}</span>
+                </div>
+
+                {/* Address */}
+                {auth?.user?.address ? (
+                  <div className="cart-address">
+                    <p className="cart-address__label">📦 Deliver to</p>
+                    <p className="cart-address__val">{auth.user.address}</p>
+                    <button
+                      className="cart-address__change"
+                      onClick={() => navigate("/dashboard/user/profile")}
+                    >
+                      Change Address
+                    </button>
+                  </div>
                 ) : (
-                  <button
-                    className="btn btn-outline-warning"
-                    onClick={() =>
-                      navigate("/login", {
-                        state: "/cart",
-                      })
-                    }
-                  >
-                    Plase Login to checkout
-                  </button>
+                  <div className="cart-address">
+                    {auth?.token ? (
+                      <button
+                        className="btn-nova-primary w-100"
+                        onClick={() => navigate("/dashboard/user/profile")}
+                      >
+                        Add Delivery Address
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-nova-primary w-100"
+                        onClick={() => navigate("/login", { state: "/cart" })}
+                      >
+                        Login to Checkout
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Payment */}
+                {clientToken && cart?.length > 0 && (
+                  <div className="cart-payment">
+                    <DropIn
+                      options={{ authorization: clientToken, paypal: { flow: "vault" } }}
+                      onInstance={(i) => setInstance(i)}
+                    />
+                    <button
+                      className="btn-nova-primary w-100 mt-2"
+                      onClick={handlePayment}
+                      disabled={loading || !instance || !auth?.user?.address}
+                      style={{ opacity: (!instance || !auth?.user?.address) ? 0.5 : 1 }}
+                    >
+                      {loading ? "Processing..." : "Place Order →"}
+                    </button>
+                  </div>
                 )}
               </div>
-            )}
-            <div className="mt-2">
-              {!clientToken || !cart?.length ? (
-                ""
-              ) : (
-                <>
-                  <DropIn
-                    options={{
-                      authorization: clientToken,
-                      paypal: {
-                        flow: "vault",
-                      },
-                    }}
-                    onInstance={(instance) => setInstance(instance)}
-                  />
-
-                  <button
-                    className="btn btn-primary"
-                    onClick={handlePayment}
-                    disabled={loading || !instance || !auth?.user?.address}
-                  >
-                    {loading ? "Processing ...." : "Make Payment"}
-                  </button>
-                </>
-              )}
             </div>
           </div>
-        </div> 
+        </div>
       </div>
     </Layout>
   );

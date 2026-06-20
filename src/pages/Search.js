@@ -1,67 +1,54 @@
 import React from "react";
 import Layout from "./../components/Layout/Layout";
 import { useSearch } from "../context/search";
-import { useNavigate } from "react-router-dom";
+import ProductCard from "../components/ProductCard/ProductCard";
+import { SkeletonGrid } from "../components/SkeletonCard/SkeletonCard";
+import "./Search.css";
 
 const Search = () => {
-  const { values, setValues, searchLoading } = useSearch();
-  const navigate = useNavigate();
+  const { values, searchLoading } = useSearch();
 
   return (
-    <Layout title={"Search results"}>
-      <div className="container">
-        <div className="text-center">
-          <h1>Search Results</h1>
-          <h6>
-            {values?.results.length < 1
-              ? "No Products Found"
-              : `Found ${values?.results.length}`}
-          </h6>
-          <div className="d-flex flex-wrap mt-4 pb-5">
-            {searchLoading ? (
-              <div className="loaderWrap">
-                <span className="loader"></span>
-              </div>
-            ) : (
-              values?.results.map((p) => (
-                <div
-                  className="card m-2  text-center px-3"
-                  style={{ width: "12rem" }}
-                >
-                  <a
-                    onClick={() => navigate(`/product/${p.slug}`)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <img
-                      src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                      className="card-img-top pt-1"
-                      style={{
-                        height: "250px",
-                        maxWidth: "100%",
-                        maxHeight: "250px",
-                        objectFit: "contain",
-                      }}
-                      alt={p.name}
-                    />
-                    <div className="card-body">
-                      <h6 className="card-title">{p.name.substring(0, 20)}</h6>
-                      <p className="card-text">
-                        {p.description.substring(0, 30)}...
-                      </p>
-                      <p className="card-text">
-                        {p?.price?.toLocaleString("en-IN", {
-                          style: "currency",
-                          currency: "INR",
-                        })}
-                      </p>
-                      {/* <button className="btn btn-primary ms-1">More Details</button>
-                  <button className="btn btn-secondary ms-1">ADD TO CART</button> */}
-                    </div>
-                  </a>
-                </div>
-              ))
+    <Layout title="Search Results — NovaShop">
+      <div className="search-page">
+        <div className="container">
+          {/* Header */}
+          <div className="search-page__header">
+            <h1 className="search-page__title">
+              {values?.keyword ? (
+                <>Search results for "<span>{values.keyword}</span>"</>
+              ) : (
+                "Search Results"
+              )}
+            </h1>
+            {!searchLoading && (
+              <span className="search-page__count">
+                {values?.results?.length < 1
+                  ? "No products found"
+                  : `${values?.results?.length} product${values?.results?.length !== 1 ? "s" : ""} found`}
+              </span>
             )}
           </div>
+
+          {/* Results */}
+          {searchLoading ? (
+            <SkeletonGrid count={8} />
+          ) : values?.results?.length < 1 ? (
+            <div className="search-empty">
+              <span className="search-empty__icon">🔍</span>
+              <h2>No Products Found</h2>
+              <p>
+                We couldn't find anything for "{values?.keyword}". Try a different search term.
+              </p>
+              <a href="/" className="search-empty__cta">Browse All Products</a>
+            </div>
+          ) : (
+            <div className="product-grid">
+              {values?.results?.map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Layout>

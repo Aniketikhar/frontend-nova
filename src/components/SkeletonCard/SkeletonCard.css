@@ -1,0 +1,28 @@
+.skeleton-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #F3F4F6 25%,
+    #E9EAEE 50%,
+    #F3F4F6 75%
+  );
+  background-size: 700px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+.skeleton-img { height: 200px; width: 100%; }
+.skeleton-body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skeleton-line { height: 12px; border-radius: 6px; width: 100%; }
+.skeleton-line.short { width: 40%; }
+.skeleton-line.medium { width: 65%; }
+.skeleton-price { height: 16px; width: 50%; border-radius: 6px; margin-top: 4px; }

@@ -1,39 +1,37 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./../components/Layout/Layout";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import { useCart } from "../context/cart";
 import toast from "react-hot-toast";
-import { BsFillCartPlusFill } from "react-icons/bs";
+import { BsCartPlus } from "react-icons/bs";
+import ProductCard from "../components/ProductCard/ProductCard";
+import { SkeletonGrid } from "../components/SkeletonCard/SkeletonCard";
 import "./ProductDetails.css";
 
-// Helper function to split the description string
-const splitDescription = (description) => {
-  // Split by period and filter out empty strings after trimming
-  return description
+const splitDescription = (description) =>
+  description
     .split(".")
-    .map((point) => point.trim())
-    .filter((point) => point);
-};
+    .map((p) => p.trim())
+    .filter((p) => p.length > 3);
 
 const ProductDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const [auth, setAuth] = useAuth();
+  const [auth] = useAuth();
   const [cart, setCart] = useCart();
   const [points, setPoints] = useState([]);
   const [proLoading, setProloading] = useState(false);
   const [simiLoading, setSimiloading] = useState(false);
+  const [qty, setQty] = useState(1);
 
-  // Initial product details
   useEffect(() => {
     if (params?.slug) getProduct();
   }, [params?.slug]);
 
-  // Get product details
   const getProduct = async () => {
     try {
       setProloading(true);
@@ -43,17 +41,15 @@ const ProductDetails = () => {
       setProduct(data?.product);
       setProloading(false);
       getSimilarProduct(data?.product._id, data?.product.category._id);
-
       if (data?.product?.description) {
-        const formattedPoints = splitDescription(data.product.description);
-        setPoints(formattedPoints);
+        setPoints(splitDescription(data.product.description));
       }
     } catch (error) {
       console.log(error);
+      setProloading(false);
     }
   };
 
-  // Get similar products
   const getSimilarProduct = async (pid, cid) => {
     try {
       setSimiloading(true);
@@ -67,123 +63,141 @@ const ProductDetails = () => {
     }
   };
 
+  const handleAddToCart = () => {
+    // Add qty copies (or merge if already in cart)
+    const existing = cart.filter((i) => i._id === product._id);
+    const toAdd = Array(qty).fill(product);
+    const updatedCart = [...cart, ...toAdd];
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    toast.success(`${qty} item${qty > 1 ? "s" : ""} added to cart!`);
+  };
+
   return (
-    <Layout>
-      <div className="row container pt-5 mx-auto ">
-        <div className="col-12 col-md-6  ">
-          <div className="d-flex justify-content-center shadow py-5 rounded-3 bg-white">
-            {proLoading ? (
-              <div className="loaderWrap">
-                <span className="loader"></span>
+    <Layout title={product?.name ? `${product.name} — NovaShop` : "Product — NovaShop"}>
+      <div className="product-detail-page">
+        <div className="container">
+          {/* Breadcrumb */}
+          <nav className="pd-breadcrumb">
+            <Link to="/">Home</Link>
+            <span>›</span>
+            {product?.category && (
+              <>
+                <Link to={`/category/${product.category.slug}`}>{product.category.name}</Link>
+                <span>›</span>
+              </>
+            )}
+            <span className="current">{product?.name?.substring(0, 40)}</span>
+          </nav>
+
+          {/* Main layout */}
+          <div className="row g-4 g-md-5">
+            {/* Image */}
+            <div className="col-12 col-md-5">
+              <div className="pd-img-wrap">
+                {proLoading ? (
+                  <div className="loaderWrap"><span className="loader" /></div>
+                ) : (
+                  <img
+                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${product._id}`}
+                    className="pd-img"
+                    alt={product.name}
+                    title="Click to zoom"
+                  />
+                )}
               </div>
+            </div>
+
+            {/* Info */}
+            <div className="col-12 col-md-7">
+              {proLoading ? (
+                <div className="loaderWrap"><span className="loader" /></div>
+              ) : (
+                <div className="pd-info">
+                  {product.brand && <span className="pd-brand">{product.brand}</span>}
+                  <h1 className="pd-name">{product.name}</h1>
+
+                  {/* Badges */}
+                  <div className="pd-badges">
+                    <span className="pd-badge instock">✓ In Stock</span>
+                    <span className="pd-badge free-ship">🚚 Free Shipping</span>
+                  </div>
+
+                  {/* Price */}
+                  <p className="pd-price">
+                    {product?.price?.toLocaleString("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                    })}
+                  </p>
+                  <p className="pd-price-sub">Inclusive of all taxes</p>
+
+                  {/* Qty + Cart */}
+                  <div className="pd-actions">
+                    <div className="qty-control">
+                      <button
+                        className="qty-btn"
+                        onClick={() => setQty((q) => Math.max(1, q - 1))}
+                      >−</button>
+                      <span className="qty-value">{qty}</span>
+                      <button
+                        className="qty-btn"
+                        onClick={() => setQty((q) => q + 1)}
+                      >+</button>
+                    </div>
+                    <button className="pd-add-btn" onClick={handleAddToCart}>
+                      <BsCartPlus size={20} />
+                      ADD TO CART
+                    </button>
+                  </div>
+
+                  {/* Delivery address */}
+                  {auth?.user?.address && (
+                    <div className="pd-delivery">
+                      <span className="pd-delivery__icon">📦</span>
+                      <div>
+                        <p className="pd-delivery__label">Deliver to</p>
+                        <p className="pd-delivery__addr">{auth.user.address}</p>
+                        <Link to="/dashboard/user/profile" className="pd-delivery__change">
+                          Change address
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+
+                  <hr className="pd-divider" />
+
+                  {/* Features */}
+                  {points.length > 0 && (
+                    <>
+                      <h3 className="pd-features-title">Features & Details</h3>
+                      <ul className="pd-features-list">
+                        {points.map((point, i) => (
+                          <li key={i}>{point}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Related Products */}
+          <div className="related-section">
+            <h2 className="related-title">Similar Products</h2>
+            {simiLoading ? (
+              <SkeletonGrid count={5} />
+            ) : relatedProducts.length < 1 ? (
+              <p className="related-empty">No similar products found.</p>
             ) : (
-              <img
-                src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${product._id}`}
-                className="img-fluid"
-                style={{ maxHeight: "25rem" }}
-                alt={product.name}
-              />
+              <div className="product-grid">
+                {relatedProducts.map((p) => (
+                  <ProductCard key={p._id} product={p} />
+                ))}
+              </div>
             )}
           </div>
-        </div>
-        <div className="col-12 col-md-6 ps-md-5 pt-5 pt-md-0 product-detail">
-          {proLoading ? (
-            <div className="loaderWrap">
-              <span className="loader"></span>
-            </div>
-          ) : (
-            <>
-              <h5>{product.brand}</h5>
-              <h3>{product.name}</h3>
-              <h2>
-                {product?.price?.toLocaleString("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                })}
-              </h2>
-              <button
-                className="btn btn-warning rounded-0 ms-1 px-5 py-2 addtocart"
-                onClick={() => {
-                  setCart([...cart, product]);
-                  localStorage.setItem(
-                    "cart",
-                    JSON.stringify([...cart, product])
-                  );
-                  toast.success("Item added successfully");
-                }}
-              >
-                <BsFillCartPlusFill /> ADD TO CART
-              </button>
-
-              <hr />
-              <h4>Features & Details</h4>
-              <ul>
-                {points.map((point, index) => (
-                  <li key={index} className="">
-                    <h6>{point}</h6>
-                  </li>
-                ))}
-              </ul>
-
-              {auth?.user?.address && (
-                <>
-                  <hr />
-                  <div className="mb-3">
-                    <h4>Deliver to</h4>
-                    <p>{auth?.user?.address}</p>
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-      <hr />
-      <div className="container">
-        <h4>Similar Products</h4>
-        {relatedProducts.length < 1 && (
-          <p className="text-center">No Similar Products found</p>
-        )}
-        <div className="container d-flex flex-wrap mx-auto">
-          {proLoading ? (
-            <div className="loaderWrap">
-              <span className="loader"></span>
-            </div>
-          ) : (
-            relatedProducts?.map((p) => (
-              <div
-                className="card m-2 text-center shadow"
-                style={{ width: "12rem" }}
-                key={p._id}
-              >
-                <a
-                  onClick={() => navigate(`/product/${p.slug}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <img
-                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                    className="card-img-top px-3"
-                    style={{
-                      height: "250px",
-                      maxWidth: "100%",
-                      maxHeight: "200px",
-                      objectFit: "contain",
-                    }}
-                    alt={p.name}
-                  />
-                  <div className="card-body text-start">
-                    <h6 className="card-title">{p.name.substring(0, 32)}...</h6>
-                    <p className="card-text fw-bold">
-                      {p?.price?.toLocaleString("en-IN", {
-                        style: "currency",
-                        currency: "INR",
-                      })}
-                    </p>
-                  </div>
-                </a>
-              </div>
-            ))
-          )}
         </div>
       </div>
     </Layout>

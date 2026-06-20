@@ -3,13 +3,23 @@ import Layout from "./../components/Layout/Layout";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/cart";
 import axios from "axios";
-import { NavLink, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useCategory from "../hooks/useCategory";
 import "./HomePage.css";
+import ProductCard from "../components/ProductCard/ProductCard";
+import { SkeletonGrid } from "../components/SkeletonCard/SkeletonCard";
 
 // carousel
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+
+const CATEGORY_META = {
+  mobiles:    { emoji: "📱", slug: "mobiles"    },
+  tvs:        { emoji: "📺", slug: "tvs"        },
+  laptops:    { emoji: "💻", slug: "laptops"    },
+  headphones: { emoji: "🎧", slug: "headphones" },
+  watches:    { emoji: "⌚", slug: "watches"    },
+};
 
 const HomePage = () => {
   const [cart, setCart] = useCart();
@@ -26,18 +36,14 @@ const HomePage = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [catLoading, setCatLoading] = useState(true);
 
-  //get all cat
   const getAllCategory = async () => {
     try {
-      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/category/get-category`
       );
-      if (data?.success) {
-        setCategories(data?.category);
-        setLoading(false);
-      }
+      if (data?.success) setCategories(data?.category);
     } catch (error) {
       console.log(error);
     }
@@ -48,7 +54,6 @@ const HomePage = () => {
     getTotal();
   }, []);
 
-  //get products
   const getAllProducts = async () => {
     try {
       setLoading(true);
@@ -63,96 +68,58 @@ const HomePage = () => {
     }
   };
 
-  // get products by category TV
-
   const getProductByTV = async () => {
     try {
-      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/category-tv`
       );
-      setLoading(false);
       setTVProducts(data.products);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
-
-  //  get products by category mobiles
 
   const getProductByMobiles = async () => {
     try {
-      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/category-mobiles`
       );
-      setLoading(false);
       setMobileProducts(data.products);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
-
-  // get products by category laptops
 
   const getProductsByLaptops = async () => {
     try {
-      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/category-laptops`
       );
-      setLoading(false);
       setLaptopProducts(data.products);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
-
-  // get products by category headphone
 
   const getProductsByHeadphone = async () => {
     try {
-      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/category-headphones`
       );
-      setLoading(false);
       setHeadphoneProducts(data.products);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
-
-  //  get products by category watches
 
   const getProductsByWatch = async () => {
     try {
-      setLoading(true);
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/category-watches`
       );
-      setLoading(false);
       setWatchesProducts(data.products);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
 
-  //getTOtal COunt
   const getTotal = async () => {
     try {
       const { data } = await axios.get(
         `${process.env.REACT_APP_API}/api/v1/product/product-count`
       );
       setTotal(data?.total);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
 
   useEffect(() => {
@@ -160,7 +127,6 @@ const HomePage = () => {
     loadMore();
   }, [page]);
 
-  //load more
   const loadMore = async () => {
     try {
       setLoading(true);
@@ -170,30 +136,28 @@ const HomePage = () => {
       setLoading(false);
       setProducts([...products, ...data?.products]);
     } catch (error) {
-      console.log(error);
       setLoading(false);
+      console.log(error);
     }
   };
 
-  // filter by cat
   const handleFilter = (value, id) => {
     let all = [...checked];
-    if (value) {
-      all.push(id);
-    } else {
-      all = all.filter((c) => c !== id);
-    }
+    if (value) { all.push(id); } else { all = all.filter((c) => c !== id); }
     setChecked(all);
   };
 
   useEffect(() => {
     if (!checked.length || !radio.length) {
-      getAllProducts();
-      getProductByTV();
-      getProductByMobiles();
-      getProductsByLaptops();
-      getProductsByHeadphone();
-      getProductsByWatch();
+      setCatLoading(true);
+      Promise.all([
+        getAllProducts(),
+        getProductByTV(),
+        getProductByMobiles(),
+        getProductsByLaptops(),
+        getProductsByHeadphone(),
+        getProductsByWatch(),
+      ]).finally(() => setCatLoading(false));
     }
   }, [checked.length, radio.length]);
 
@@ -201,451 +165,178 @@ const HomePage = () => {
     if (checked.length || radio.length) filterProduct();
   }, [checked, radio]);
 
-  //get filterd product
   const filterProduct = async () => {
     try {
-      const { data } = await axios.post(`/api/v1/product/product-filters`, {
-        checked,
-        radio,
-      });
+      const { data } = await axios.post(`/api/v1/product/product-filters`, { checked, radio });
       setProducts(data?.products);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) { console.log(error); }
   };
 
-  // for making responsive carousel
   const responsive = {
-    superLargeDesktop: {
-      // the naming can be any, depends on you.
-      breakpoint: { max: 4000, min: 3000 },
-      items: 6,
-    },
-    desktop: {
-      breakpoint: { max: 3000, min: 1028 },
-      items: 5,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 756 },
-      items: 3,
-    },
-    mobile: {
-      breakpoint: { max: 756, min: 0 },
-      items: 2,
-    },
+    superLargeDesktop: { breakpoint: { max: 4000, min: 3000 }, items: 6 },
+    desktop:           { breakpoint: { max: 3000, min: 1028 }, items: 5 },
+    tablet:            { breakpoint: { max: 1024, min: 640  }, items: 3 },
+    mobile:            { breakpoint: { max: 640,  min: 0    }, items: 2 },
   };
+
+  const CategorySection = ({ title, emoji, slug, products }) => (
+    <div className="cat-section">
+      <div className="cat-section__header">
+        <Link className="cat-section__title" to={`/category/${slug}`}>
+          <span className="cat-section__emoji">{emoji}</span>
+          {title}
+        </Link>
+        <Link className="cat-section__see-all" to={`/category/${slug}`}>
+          See All →
+        </Link>
+      </div>
+      {products?.length > 0 ? (
+        <Carousel responsive={responsive} infinite autoPlay autoPlaySpeed={3500} removeArrowOnDeviceType={["mobile"]}>
+          {products.map((p) => (
+            <div key={p._id} style={{ padding: "4px 6px" }}>
+              <ProductCard product={p} />
+            </div>
+          ))}
+        </Carousel>
+      ) : (
+        <div className="product-grid">
+          <SkeletonGrid count={5} />
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <>
-      <Layout title={"All Products - Best offers "}>
-        {/* this show all categories */}
-        <div className="container-fluid category-container px-5 py-2 text-light ">
-          <div class="container">
-            <div className=" d-md-inline-block">
-              All Categories
-              {/* <Link className="dropdown-item" to={"/categories"}>
-            </Link> */}
-            </div>
-            <ul className=" category-show d-inline-block p-0">
-              {categories?.map((c) => (
-                <li>
-                  <Link className="dropdown-item" to={`/category/${c.slug}`}>
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <Layout title="NovaShop — Best Deals on Electronics">
+      {/* Category Strip */}
+      <div className="category-strip">
+        <div className="container category-strip__inner">
+          <span className="category-strip__label">Browse:</span>
+          {categories?.map((c) => (
+            <Link key={c._id} className="category-strip__item" to={`/category/${c.slug}`}>
+              {CATEGORY_META[c.slug]?.emoji || "🛍️"} {c.name}
+            </Link>
+          ))}
         </div>
-       
+      </div>
 
-        {loading ? (
-          <div className="loaderWrap">
-            <span className="loader"></span>
-          </div>
-        ) : (
-          <>
-           {/* carousel */}
+      <div className="container-fluid px-3 px-md-4">
+        {/* Hero Carousel */}
         <div
           id="carouselExampleIndicators"
           className="carousel slide carousel-slides d-none d-md-block"
           data-bs-ride="carousel"
         >
           <div className="carousel-indicators">
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to={0}
-              className="active"
-              aria-current="true"
-              aria-label="Slide 1"
-            />
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to={1}
-              aria-label="Slide 2"
-            />
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to={2}
-              aria-label="Slide 3"
-            />
-            <button
-              type="button"
-              data-bs-target="#carouselExampleIndicators"
-              data-bs-slide-to={3}
-              aria-label="Slide 4"
-            />
+            {[0,1,2,3].map((i) => (
+              <button
+                key={i}
+                type="button"
+                data-bs-target="#carouselExampleIndicators"
+                data-bs-slide-to={i}
+                className={i === 0 ? "active" : ""}
+                aria-label={`Slide ${i + 1}`}
+              />
+            ))}
           </div>
           <div className="carousel-inner">
-            <div className="carousel-item active" data-bs-interval="3000">
-              <Link
-                className="dropdown-item"
-                to={`/product/Samsung-Galaxy-F55-5G`}
-              >
-                <img
-                  src="images/banner11.webp"
-                  className="d-block slide-img w-100"
-                  alt="..."
-                />
+            <div className="carousel-item active" data-bs-interval="3500">
+              <Link to="/product/Samsung-Galaxy-F55-5G">
+                <img src="images/banner11.webp" className="d-block slide-img w-100" alt="Samsung Galaxy F55" />
               </Link>
             </div>
-            <div className="carousel-item" data-bs-interval="3000">
-              <Link
-                className="dropdown-item"
-                to={`/product/Motorola-Edge-50-Pro-5G`}
-              >
-                <img
-                  src="images/carousel-2.jpg"
-                  className="d-block slide-img w-100"
-                  alt="..."
-                />
+            <div className="carousel-item" data-bs-interval="3500">
+              <Link to="/product/Motorola-Edge-50-Pro-5G">
+                <img src="images/carousel-2.jpg" className="d-block slide-img w-100" alt="Motorola Edge 50 Pro" />
               </Link>
             </div>
-            <div className="carousel-item" data-bs-interval="3000">
-              <Link
-                className="dropdown-item"
-                to={`/product/Motorola-Edge-50-Fusion-(Marshmallow-Blue-128-GB)-(8-GB-RAM)JustHere`}
-              >
-                <img
-                  src="images/banner12.webp"
-                  className="d-block slide-img w-100"
-                  alt="..."
-                />
+            <div className="carousel-item" data-bs-interval="3500">
+              <Link to="/product/Motorola-Edge-50-Fusion-(Marshmallow-Blue-128-GB)-(8-GB-RAM)JustHere">
+                <img src="images/banner12.webp" className="d-block slide-img w-100" alt="Motorola Edge 50 Fusion" />
               </Link>
             </div>
-            <div className="carousel-item" data-bs-interval="3000">
-              <Link
-                className="dropdown-item"
-                to={`/product/Poco-F6-5G-(12GB-RAM-+256GB)`}
-              >
-                <img
-                  src="images/banner13.webp"
-                  className="d-block slide-img w-100"
-                  alt="..."
-                />
+            <div className="carousel-item" data-bs-interval="3500">
+              <Link to="/product/Poco-F6-5G-(12GB-RAM-+256GB)">
+                <img src="images/banner13.webp" className="d-block slide-img w-100" alt="Poco F6 5G" />
               </Link>
             </div>
           </div>
-          <button
-            className="carousel-control-prev"
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide="prev"
-          >
-            <span className="carousel-control-prev-icon" aria-hidden="true" />
-            <span className="visually-hidden">Previous</span>
+          <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span className="carousel-control-prev-icon" />
           </button>
-          <button
-            className="carousel-control-next"
-            type="button"
-            data-bs-target="#carouselExampleIndicators"
-            data-bs-slide="next"
-          >
-            <span className="carousel-control-next-icon" aria-hidden="true" />
-            <span className="visually-hidden">Next</span>
+          <button className="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span className="carousel-control-next-icon" />
           </button>
         </div>
 
-        {/* products by category mobiles */}
-            <div className="container my-5 rounded-4 bg-body-tertiary">
-              <Link className="dropdown-item" to={`/category/mobiles`}>
-                <h3 className=" mobile pt-4 ms-4">Mobiles</h3>
-              </Link>
-              <Carousel responsive={responsive}>
-                {mobileproducts?.map((p) => (
-                  <div className="card m-2 text-center shadow product">
-                    <a
-                      onClick={() => navigate(`/product/${p.slug}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                        className="card-img-top px-3 py-2"
-                        style={{
-                          height: "250px",
-                          maxWidth: "100%",
-                          maxHeight: "250px",
-                          objectFit: "contain",
-                        }}
-                        alt={p.name}
-                      />
-                      <div className="card-body text-start">
-                        <h6 className="card-title">
-                          {p.name.substring(0, 32)}...
-                        </h6>
-
-                        <p className="card-text fw-bold">
-                          {p?.price?.toLocaleString("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </Carousel>
+        {/* Trust Bar */}
+        <div className="container trust-bar">
+          <div className="trust-item">
+            <span className="trust-icon">🚚</span>
+            <div>
+              <p className="trust-title">Free Shipping</p>
+              <p className="trust-sub">On orders above ₹499</p>
             </div>
-
-            {/* products by category TV */}
-            <div className="container my-5 bg-body-tertiary rounded-4 ">
-              <Link className="dropdown-item" to={`/category/tvs`}>
-                <h3 className="pt-4 ps-4">TVs</h3>
-              </Link>
-              <Carousel responsive={responsive}>
-                {tvproducts?.map((p) => (
-                  <div
-                    className="card m-2 text-center shadow"
-                    style={{ width: "12rem" }}
-                  >
-                    <a
-                      onClick={() => navigate(`/product/${p.slug}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                        className="card-img-top px-3"
-                        style={{
-                          height: "250px",
-                          maxWidth: "100%",
-                          maxHeight: "250px",
-                          objectFit: "contain",
-                        }}
-                        alt={p.name}
-                      />
-                      <div className="card-body text-start">
-                        <h6 className="card-title">
-                          {p.name.substring(0, 32)}...
-                        </h6>
-
-                        <p className="card-text fw-bold">
-                          {p?.price?.toLocaleString("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </Carousel>
+          </div>
+          <div className="trust-item">
+            <span className="trust-icon">🔒</span>
+            <div>
+              <p className="trust-title">Secure Payment</p>
+              <p className="trust-sub">100% safe & protected</p>
             </div>
-
-            {/* products by category laptops */}
-            <div className="container my-5 bg-body-tertiary rounded-4 ">
-              <Link className="dropdown-item" to={`/category/laptops`}>
-                <h3 className="ps-4 pt-4">Laptops</h3>
-              </Link>
-              <Carousel responsive={responsive}>
-                {laptopsproducts?.map((p) => (
-                  <div
-                    className="card m-2 text-center shadow"
-                    style={{ width: "12rem" }}
-                  >
-                    <a
-                      onClick={() => navigate(`/product/${p.slug}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                        className="card-img-top px-3"
-                        style={{
-                          height: "250px",
-                          maxWidth: "100%",
-                          maxHeight: "250px",
-                          objectFit: "contain",
-                        }}
-                        alt={p.name}
-                      />
-                      <div className="card-body text-start">
-                        <h6 className="card-title">
-                          {p.name.substring(0, 32)}...
-                        </h6>
-
-                        <p className="card-text fw-bold">
-                          {p?.price?.toLocaleString("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </Carousel>
+          </div>
+          <div className="trust-item">
+            <span className="trust-icon">↩️</span>
+            <div>
+              <p className="trust-title">Easy Returns</p>
+              <p className="trust-sub">7-day return policy</p>
             </div>
-
-            {/* products by category Headphones */}
-            <div className="container my-5 bg-body-tertiary rounded-4">
-              <Link className="dropdown-item" to={`/category/headphones`}>
-                <h3 className="ps-4 pt-4">Headphones</h3>
-              </Link>
-              <Carousel responsive={responsive}>
-                {headphoneproducts?.map((p) => (
-                  <div
-                    className="card m-2 text-center shadow"
-                    style={{ width: "12rem" }}
-                  >
-                    <a
-                      onClick={() => navigate(`/product/${p.slug}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                        className="card-img-top px-3"
-                        style={{
-                          height: "250px",
-                          maxWidth: "100%",
-                          maxHeight: "250px",
-                          objectFit: "contain",
-                        }}
-                        alt={p.name}
-                      />
-                      <div className="card-body text-start">
-                        <h6 className="card-title">
-                          {p.name.substring(0, 32)}...
-                        </h6>
-
-                        <p className="card-text fw-bold">
-                          {p?.price?.toLocaleString("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </Carousel>
+          </div>
+          <div className="trust-item">
+            <span className="trust-icon">🎧</span>
+            <div>
+              <p className="trust-title">24/7 Support</p>
+              <p className="trust-sub">Always here to help</p>
             </div>
+          </div>
+        </div>
 
-            {/* product by watches */}
-            <div className="container my-5 bg-body-tertiary rounded-4">
-              <Link className="dropdown-item" to={`/category/watches`}>
-                <h3 className="ps-4 pt-4">Watches</h3>
-              </Link>
-              <Carousel responsive={responsive}>
-                {watchesproducts?.map((p) => (
-                  <div
-                    className="card m-2 text-center shadow"
-                    style={{ width: "12rem" }}
-                  >
-                    <a
-                      onClick={() => navigate(`/product/${p.slug}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                        className="card-img-top px-3"
-                        style={{
-                          height: "250px",
-                          maxWidth: "100%",
-                          maxHeight: "250px",
-                          objectFit: "contain",
-                        }}
-                        alt={p.name}
-                      />
-                      <div className="card-body text-start">
-                        <h6 className="card-title">
-                          {p.name.substring(0, 32)}...
-                        </h6>
+        {/* Category Sections */}
+        <CategorySection title="Mobiles"    emoji="📱" slug="mobiles"    products={mobileproducts}    />
+        <CategorySection title="Televisions" emoji="📺" slug="tvs"        products={tvproducts}        />
+        <CategorySection title="Laptops"    emoji="💻" slug="laptops"    products={laptopsproducts}   />
+        <CategorySection title="Headphones" emoji="🎧" slug="headphones" products={headphoneproducts} />
+        <CategorySection title="Watches"    emoji="⌚" slug="watches"    products={watchesproducts}   />
 
-                        <p className="card-text fw-bold">
-                          {p?.price?.toLocaleString("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </Carousel>
+        {/* All Products */}
+        <div className="all-section">
+          <div className="all-section__header">
+            <h2 className="all-section__title">All Products</h2>
+          </div>
+
+          {loading && products.length === 0 ? (
+            <SkeletonGrid count={10} />
+          ) : (
+            <div className="product-grid">
+              {products?.map((p) => (
+                <ProductCard key={p._id} product={p} />
+              ))}
             </div>
+          )}
 
-            {/* All products */}
-            <div className="container">
-              <h1 className="text-center all ">All Product</h1>
-
-              <div className="d-flex flex-wrap">
-                {products?.map((p) => (
-                  <div
-                    className="card all-product m-2 text-center shadow"
-                    style={{ width: "12rem" }}
-                  >
-                    <a
-                      onClick={() => navigate(`/product/${p.slug}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <img
-                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
-                        className="card-img-top px-3"
-                        style={{
-                          height: "250px",
-                          maxWidth: "100%",
-                          maxHeight: "250px",
-                          objectFit: "contain",
-                        }}
-                        alt={p.name}
-                      />
-                      <div className="card-body text-start">
-                        <h6 className="card-title">
-                          {p.name.substring(0, 32)}...
-                        </h6>
-
-                        <p className="card-text fw-bold">
-                          {p?.price?.toLocaleString("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
-                        </p>
-                      </div>
-                    </a>
-                  </div>
-                ))}
-              </div>
-              <div className="m-2 p-3">
-                {products && products.length < total && (
-                  <button
-                    className="btn text-dark btn-warning"
-                    // style={{ background: "orangered" }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setPage(page + 1);
-                    }}
-                  >
-                    {loading ? "Loading ..." : "Loadmore"}
-                  </button>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-      </Layout>
-    </>
+          <div className="loadmore-wrap">
+            {products && products.length < total && (
+              <button
+                className="loadmore-btn"
+                onClick={(e) => { e.preventDefault(); setPage(page + 1); }}
+              >
+                {loading ? "Loading..." : "Load More Products"}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
